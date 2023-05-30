@@ -6,6 +6,8 @@ const subscription = {
         this.data.push(item);
 
         this.listeners.forEach(handler => handler(item))
+
+        console.log(this.data, this.listeners)
     },
 
     listen(handler){

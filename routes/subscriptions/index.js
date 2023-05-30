@@ -3,17 +3,17 @@ const subscriptions = require('../../db/db')
 const router = new Router();
 
 
-router.post('/subsctiptions', async(ctx) => {
+router.post('/subscriptions', async(ctx) => {
     console.log(typeof ctx.request.body)
     console.log(ctx.request.body)
     
-    ctx.response.body = 'subsctiptions';
+    ctx.response.body = 'subscriptions';
 
-    const { name, phone } = ctx.request.body;
+    const { name } = ctx.request.body;
 
     ctx.response.set('Access-Control-Allow-Origin', '*');
 
-    if(subscriptions.data.some(sub => sub.phone === phone)) {
+    if(subscriptions.data.some(sub => sub.name === name)) {
     // если телефон уже есть в подписках
         ctx.response.status = 400;
         // то отправить статус ответа - ошибка
@@ -22,15 +22,23 @@ router.post('/subsctiptions', async(ctx) => {
         return;
     }
 
-    subscriptions.add({ name, phone });
+    subscriptions.add({ name });
     // добавить подписку
     
     ctx.response.body = { status: "OK" };
 });
 
+// Получение подписок
+router.get('/subscriptions/full', (ctx) => {
+
+    ctx.response.set('Access-Control-Allow-Origin', '*');
+    
+    ctx.response.body = subscriptions.data;
+})
+
 
 // Удаление подписки
-router.delete('/subsctiptions/:phone', (ctx) => {
+router.delete('/subscriptions/:phone', (ctx) => {
     const { phone } = ctx.params;
     console.log(phone)
     ctx.response.set('Access-Control-Allow-Origin', '*');

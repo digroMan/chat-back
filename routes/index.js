@@ -2,7 +2,7 @@
 const combineRouters = require('koa-combine-routers');
 
 // экспорт объвленных роутеров
-const subscriptions = require('./subsctiptions/index')
+const subscriptions = require('./subscriptions/index')
 const index = require('./index/index')
 const sse = require('./sse/index')
 
