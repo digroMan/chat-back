@@ -44,7 +44,10 @@ router.delete('/subscriptions/:name', (ctx) => {
 
     ctx.response.set('Access-Control-Allow-Origin', '*');
 
-    if(!!name) return;
+    if(name === undefined) return;
+
+    console.log(name)
+
 
     console.log('----------------')
 
