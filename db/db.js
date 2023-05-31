@@ -6,12 +6,16 @@ const subscription = {
         this.data.push(item);
 
         this.listeners.forEach(handler => handler(item))
-
-        console.log(this.data, this.listeners)
     },
 
     listen(handler){
         this.listeners.push(handler)
+    },
+
+    delete(item){
+        this.data = this.data.filter(sub => sub.name !== item)
+
+        this.listeners.forEach(handler => handler(item))
     }
 }
 

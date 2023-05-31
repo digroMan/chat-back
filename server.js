@@ -55,21 +55,31 @@ const wsServer = new WebSocketServer({
     server
 });
 
-const chat = ['welcome'];
+const chat = [{
+    client: 'server',
+    message: 'Welcome to the chat',
+    date: Number(new Date())
+}];
 
-wsServer.on('connection', (ws) => {
-    ws.on('message', (message) => {
-        chat.push(message.toString());
-        console.log(chat)
+wsServer.on('connection', (ws) => { 
+// обработка события подключения к пользователю
 
-        const eventData = JSON.stringify({ chat: [message.toString()] })
+    ws.on('message', (message) => { 
+    // событие обработки получения информации от пользователя
+
+        const msg = JSON.parse(message); // парсинг сообщения
+
+        chat.push(msg); // добавление сообщения в общий массив
+
+        const eventData = JSON.stringify({ chat: [msg] }); 
+        // создание объекта с ключом chat и его значением msg, приведение объекта к JSON
 
         Array.from(wsServer.clients) // взять всех пользователей чата
             .filter(client => client.readyState === WebSocket.OPEN) // отфильтровать тех кто подключены на данный момент
             .forEach(client => client.send(eventData)) // разослать сообщения
     })
 
-    ws.send(JSON.stringify({ chat }));
+    ws.send(JSON.stringify({ chat })); // при подключении отправить чат приведенный к JSON
     
 })
 
