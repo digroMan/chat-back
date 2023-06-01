@@ -44,8 +44,6 @@ app.use(async (ctx, next) => {
     }
 });
 
-//TODO: write code here
-
 app.use(router());
 
 const port = process.env.PORT || 7070;
@@ -62,24 +60,20 @@ const chat = [{
 }];
 
 wsServer.on('connection', (ws) => { 
-// обработка события подключения к пользователю
-
     ws.on('message', (message) => { 
-    // событие обработки получения информации от пользователя
 
-        const msg = JSON.parse(message); // парсинг сообщения
+        const msg = JSON.parse(message); 
 
-        chat.push(msg); // добавление сообщения в общий массив
+        chat.push(msg);
 
         const eventData = JSON.stringify({ chat: [msg] }); 
-        // создание объекта с ключом chat и его значением msg, приведение объекта к JSON
 
-        Array.from(wsServer.clients) // взять всех пользователей чата
-            .filter(client => client.readyState === WebSocket.OPEN) // отфильтровать тех кто подключены на данный момент
-            .forEach(client => client.send(eventData)) // разослать сообщения
+        Array.from(wsServer.clients) 
+            .filter(client => client.readyState === WebSocket.OPEN)
+            .forEach(client => client.send(eventData)) 
     })
 
-    ws.send(JSON.stringify({ chat })); // при подключении отправить чат приведенный к JSON
+    ws.send(JSON.stringify({ chat })); 
     
 })
 

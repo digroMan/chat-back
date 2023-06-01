@@ -8,7 +8,6 @@ const router = new Router();
 router.get('/sse', async(ctx) => {
     streamEvents(ctx.req, ctx.res, {
         async fetch(lastEventId){
-            // console.log(lastEventId)
 
             return [];
         },
@@ -25,8 +24,6 @@ router.get('/sse', async(ctx) => {
         }
     })
     
-
-    // предотвращает вмешивание сторонних фреймворков
     ctx.respond = felse;
 });
 

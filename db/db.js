@@ -1,6 +1,6 @@
 const subscription = {
     data: [],
-    listeners: [], // массив слушателей события
+    listeners: [],
 
     add(item){
         this.data.push(item);
@@ -13,10 +13,12 @@ const subscription = {
     },
 
     delete(item){
-        this.data = this.data.filter(sub => sub.name !== item)
+        console.log(item)
+        this.data = this.data.filter(sub => sub.name !== item.name)
+        console.log(this.data)
 
         this.listeners.forEach(handler => handler(item))
     }
 }
 
-module.exports = subscription; // необоходимо везде заменить логику, где упоминается subscription 
+module.exports = subscription; 
