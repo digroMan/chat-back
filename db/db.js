@@ -4,7 +4,7 @@ const subscription = {
 
     add(item){
         this.data.push(item);
-
+        
         this.listeners.forEach(handler => handler(item))
     },
 

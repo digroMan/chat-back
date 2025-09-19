@@ -24,7 +24,7 @@ router.get('/sse', async(ctx) => {
         }
     })
     
-    ctx.respond = felse;
+    ctx.respond = false;
 });
 
 module.exports = router;

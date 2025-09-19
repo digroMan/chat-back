@@ -18,7 +18,8 @@ app.use(async (ctx, next) => {
         return await next();
     }
 
-    const headers = { 'Access-Control-Allow-Origin': '*', };
+    const headers = { 'Access-Control-Allow-Origin': 'http://localhost:9000', };
+
 
     if(ctx.request.method !== 'OPTIONS'){
         ctx.response.set({ ...headers });
@@ -61,9 +62,8 @@ const chat = [{
 
 wsServer.on('connection', (ws) => { 
     ws.on('message', (message) => { 
-
+        
         const msg = JSON.parse(message); 
-
         chat.push(msg);
 
         const eventData = JSON.stringify({ chat: [msg] }); 
