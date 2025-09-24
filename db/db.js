@@ -1,11 +1,29 @@
+const template = [
+    {
+        name: 'Вадим',
+        // messges: ''
+    },
+    {
+        name: 'Дмитрий',
+        // messges: ''
+    },
+    {
+        name: 'Аркадий',
+        // messges: ''
+    },
+    {
+        name: 'Анна',
+        // messges: ''
+    }
+];
+
 const subscription = {
     data: [],
     listeners: [],
 
     add(item){
         this.data.push(item);
-        
-        this.listeners.forEach(handler => handler(item))
+        this.send({...item, add: true});
     },
 
     listen(handler){
@@ -13,12 +31,35 @@ const subscription = {
     },
 
     delete(item){
-        console.log(item)
-        this.data = this.data.filter(sub => sub.name !== item.name)
-        console.log(this.data)
-
+        this.data = this.data.filter(sub => sub.name !== item.name);
+        this.send({...item, deleteClient: true});
+    },
+    
+    send(item){
         this.listeners.forEach(handler => handler(item))
+    },
+
+    template() {
+        this.data = template
     }
 }
 
-module.exports = subscription; 
+const chat = {
+    data: [],
+    listeners: [],
+
+    add(item){
+        this.data.push(item);
+        this.send(item);
+    },
+
+    listen(handler){
+        this.listeners.push(handler)
+    },
+
+    send(item){
+        this.listeners.forEach(handler => handler(item))
+    },
+}
+
+module.exports = subscription, chat; 

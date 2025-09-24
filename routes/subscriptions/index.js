@@ -33,12 +33,8 @@ router.get('/subscriptions/full', (ctx) => {
 
 router.delete('/subscriptions/:name', (ctx) => {
     const { name } = ctx.params;
-
     ctx.response.set('Access-Control-Allow-Origin', origin);
-
-    if(name === 'undefined') return; 
-
-    subscriptions.delete({ name });
+    subscriptions.delete({ name: name });
 })
 
 module.exports = router;

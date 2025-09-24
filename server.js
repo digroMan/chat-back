@@ -4,24 +4,28 @@ const { koaBody } = require('koa-body')
 const router = require('./routes');
 const WebSocket = require('ws')
 const { WebSocketServer } = require('ws');
+const subscriptions = require('./db/db')
 
 const app = new Koa();
 
 
 app.use(koaBody({
     multipart: true,
-}))  
+}))
 
 app.use(async (ctx, next) => {
+
+    subscriptions.template();
+
     const origin = ctx.request.get('Origin');
-    if(!origin){
+    if (!origin) {
         return await next();
     }
 
     const headers = { 'Access-Control-Allow-Origin': 'http://localhost:9000', };
 
 
-    if(ctx.request.method !== 'OPTIONS'){
+    if (ctx.request.method !== 'OPTIONS') {
         ctx.response.set({ ...headers });
         try {
             return await next();
@@ -31,13 +35,13 @@ app.use(async (ctx, next) => {
         }
     }
 
-    if(ctx.request.get('Access-Control-Request-Method')){
+    if (ctx.request.get('Access-Control-Request-Method')) {
         ctx.response.set({
             ...headers,
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
         });
 
-        if(ctx.request.get('Access-Control-Request-Headers')){
+        if (ctx.request.get('Access-Control-Request-Headers')) {
             ctx.response.set('Access-Control-Allow-Headers', ctx.request.get('Access-Control-Request-Headers'));
         }
 
@@ -60,21 +64,21 @@ const chat = [{
     date: Number(new Date())
 }];
 
-wsServer.on('connection', (ws) => { 
-    ws.on('message', (message) => { 
-        
-        const msg = JSON.parse(message); 
+wsServer.on('connection', (ws) => {
+
+    ws.on('message', (message) => {
+        const msg = JSON.parse(message);
         chat.push(msg);
-
-        const eventData = JSON.stringify({ chat: [msg] }); 
-
-        Array.from(wsServer.clients) 
+        const eventData = JSON.stringify({ chat: [msg] });
+        Array.from(wsServer.clients)
             .filter(client => client.readyState === WebSocket.OPEN)
-            .forEach(client => client.send(eventData)) 
+            .forEach(client => client.send(eventData))
     })
 
-    ws.send(JSON.stringify({ chat })); 
-    
+    const chatPart = chat.slice(chat.length - 10);
+    const eventData = JSON.stringify({ chat: chatPart });
+    ws.send(eventData);
+
 })
 
 server.listen(port);
