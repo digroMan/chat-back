@@ -17,7 +17,7 @@ const template = [
     }
 ];
 
-const subscription = {
+const subscriptions = {
     data: [],
     listeners: [],
 
@@ -45,11 +45,12 @@ const subscription = {
 }
 
 const chat = {
-    data: [],
+    data: {},
     listeners: [],
 
     add(item){
-        this.data.push(item);
+        console.log(item)
+        this.data = {...item, ...this.data};
         this.send(item);
     },
 
@@ -62,4 +63,4 @@ const chat = {
     },
 }
 
-module.exports = subscription, chat; 
+module.exports = {subscriptions, chat}; 

@@ -8,7 +8,7 @@ const sse = require('./sse/index');
 const router = combineRouters(
     index,
     subscriptions,
-    // chat,
+    chat,
     sse
 );
 

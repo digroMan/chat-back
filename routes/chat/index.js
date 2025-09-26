@@ -1,24 +1,46 @@
 const Router = require('@koa/router');
-const chat = require('../../db/db')
+const {chat, ...data} = require('../../db/db');
+const { v4 } = require('uuid');
 const router = new Router();
 const origin = 'http://localhost:9000';
 
-router.post('/messages/add', async(ctx) => { 
-    ctx.response.body = {status: 'message added'};
-
-    const { message } = ctx.request.body;
-
+router.post('/chat/message-add', async (ctx) => {
     ctx.response.set('Access-Control-Allow-Origin', origin);
 
-    chat.add({ message: message });
-    
-    ctx.response.body = { status: "OK" };
+    const chatItem = {
+        [v4()]: { ...ctx.request.body }
+    }
+
+    chat.add(chatItem)
+
+    ctx.response.body = { status: 'message added' };
+    ctx.response.status = 200;
+});
+
+router.get('/chat/message-full', async (ctx) => {
+    ctx.response.set('Access-Control-Allow-Origin', origin);
+
+    if (chat.data.length === 0) {
+        ctx.response.body = {
+            data: {
+                0: {
+                    client: 'server',
+                    message: 'Welcome to the chat',
+                    date: new Date().getTime(),
+                }
+            }
+        }
+    } else {
+        ctx.response.body = { data: chat.data };
+    }
+
+    ctx.response.status = 200;
 });
 
 // router.get('/subscriptions/full', (ctx) => {
 
 //     ctx.response.set('Access-Control-Allow-Origin', origin);
-    
+
 //     ctx.response.body = subscriptions.data;
 // })
 

@@ -4,7 +4,7 @@ const { koaBody } = require('koa-body')
 const router = require('./routes');
 const WebSocket = require('ws')
 const { WebSocketServer } = require('ws');
-const subscriptions = require('./db/db')
+const {subscriptions, chat} = require('./db/db')
 
 const app = new Koa();
 
@@ -14,8 +14,7 @@ app.use(koaBody({
 }))
 
 app.use(async (ctx, next) => {
-
-    subscriptions.template();
+    subscriptions.template()
 
     const origin = ctx.request.get('Origin');
     if (!origin) {
@@ -58,24 +57,25 @@ const wsServer = new WebSocketServer({
     server
 });
 
-const chat = [{
-    client: 'server',
-    message: 'Welcome to the chat',
-    date: Number(new Date())
-}];
+// const chat = [{
+//     client: 'server',
+//     message: 'Welcome to the chat',
+//     date: new Date().getTime(),
+// }];
 
 wsServer.on('connection', (ws) => {
 
     ws.on('message', (message) => {
+        console.log(message)
         const msg = JSON.parse(message);
-        chat.push(msg);
         const eventData = JSON.stringify({ chat: [msg] });
+
         Array.from(wsServer.clients)
             .filter(client => client.readyState === WebSocket.OPEN)
             .forEach(client => client.send(eventData))
     })
 
-    const chatPart = chat.slice(chat.length - 10);
+    const chatPart = chat.data.slice(chat.data.length - 10);
     const eventData = JSON.stringify({ chat: chatPart });
     ws.send(eventData);
 

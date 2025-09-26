@@ -14,7 +14,6 @@ router.get('/sse', async(ctx) => {
 
         async stream(sse){
             subscription.listen((item) =>{
-                console.log(item)
                 sse.sendEvent({
                     id: v4(),
                     data: JSON.stringify(item),
