@@ -1,5 +1,5 @@
 const Router = require('@koa/router');
-const subscriptions = require('../../db/db')
+const {subscriptions, ..._} = require('../../db/db')
 const router = new Router();
 const origin = 'http://localhost:9000';
 

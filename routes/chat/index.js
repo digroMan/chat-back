@@ -1,23 +1,35 @@
 const Router = require('@koa/router');
-const {chat, ...data} = require('../../db/db');
+const { chat, ...data } = require('../../db/db');
 const { v4 } = require('uuid');
 const router = new Router();
 const origin = 'http://localhost:9000';
 
-router.post('/chat/message-add', async (ctx) => {
+router.post('/chat/add', async (ctx) => {
     ctx.response.set('Access-Control-Allow-Origin', origin);
 
+    const id = v4();
+
     const chatItem = {
-        [v4()]: { ...ctx.request.body }
+        [id]: { 
+            ...ctx.request.body,
+            edited: false,
+            deleted: false,
+        }
     }
 
     chat.add(chatItem)
 
-    ctx.response.body = { status: 'message added' };
+    ctx.response.body = {
+        status: 'message added',
+        data: {
+            [id]: chat.getMessage(id)
+        }
+    };
+
     ctx.response.status = 200;
 });
 
-router.get('/chat/message-full', async (ctx) => {
+router.get('/chat/full', async (ctx) => {
     ctx.response.set('Access-Control-Allow-Origin', origin);
 
     if (chat.data.length === 0) {
@@ -27,6 +39,8 @@ router.get('/chat/message-full', async (ctx) => {
                     client: 'server',
                     message: 'Welcome to the chat',
                     date: new Date().getTime(),
+                    deleted: false,
+                    edited: false,
                 }
             }
         }
@@ -37,21 +51,17 @@ router.get('/chat/message-full', async (ctx) => {
     ctx.response.status = 200;
 });
 
-// router.get('/subscriptions/full', (ctx) => {
-
-//     ctx.response.set('Access-Control-Allow-Origin', origin);
-
-//     ctx.response.body = subscriptions.data;
-// })
-
-
-// router.delete('/subscriptions/:name', (ctx) => {
-//     const { name } = ctx.params;
-//     ctx.response.set('Access-Control-Allow-Origin', origin);
-
-//     // if(name === 'undefined') return; 
-
-//     subscriptions.delete({ name });
-// })
+router.delete('/chat/delete/:id', async (ctx) => {
+    const { id } = ctx.params;
+    ctx.response.set('Access-Control-Allow-Origin', origin);
+    chat.delete(id);
+    ctx.response.body = {
+        status: `message ${id} delete`,
+        data: {
+            [id]: chat.getMessage(id),
+        }
+    };
+    ctx.response.status = 200;
+})
 
 module.exports = router;

@@ -4,7 +4,7 @@ const { koaBody } = require('koa-body')
 const router = require('./routes');
 const WebSocket = require('ws')
 const { WebSocketServer } = require('ws');
-const {subscriptions, chat} = require('./db/db')
+const { subscriptions, chat } = require('./db/db')
 
 const app = new Koa();
 
@@ -57,26 +57,40 @@ const wsServer = new WebSocketServer({
     server
 });
 
-// const chat = [{
-//     client: 'server',
-//     message: 'Welcome to the chat',
-//     date: new Date().getTime(),
-// }];
-
 wsServer.on('connection', (ws) => {
 
     ws.on('message', (message) => {
-        console.log(message)
-        const msg = JSON.parse(message);
-        const eventData = JSON.stringify({ chat: [msg] });
+        const eventSocket = JSON.parse(message);
+        console.log(eventSocket)
+
+        switch (eventSocket.type) {
+            case 'delete':
+                const id = eventSocket.data.id;
+                chat.delete(id);
+                const msg = {
+                    type: eventSocket.type,
+                    data: {[id]: chat.getMessage(id)}
+                }
+                console.log(msg)
+                Array.from(wsServer.clients)
+                    .filter(client => client.readyState === WebSocket.OPEN)
+                    .forEach(client => client.send(JSON.stringify(msg)))
+                break;
+
+            default:
+                break;
+        }
+        const eventData = JSON.stringify({ chat: [eventSocket] });
 
         Array.from(wsServer.clients)
             .filter(client => client.readyState === WebSocket.OPEN)
             .forEach(client => client.send(eventData))
     })
 
-    const chatPart = chat.data.slice(chat.data.length - 10);
-    const eventData = JSON.stringify({ chat: chatPart });
+    const eventData = JSON.stringify({
+        type: 'first-load',
+        data: chat.getLastMessages(10)
+    });
     ws.send(eventData);
 
 })
