@@ -61,30 +61,29 @@ wsServer.on('connection', (ws) => {
 
     ws.on('message', (message) => {
         const eventSocket = JSON.parse(message);
-        console.log(eventSocket)
+        const type = eventSocket.type;
+        const msg = {
+            type,
+        };
 
         switch (eventSocket.type) {
             case 'delete':
                 const id = eventSocket.data.id;
                 chat.delete(id);
-                const msg = {
-                    type: eventSocket.type,
-                    data: {[id]: chat.getMessage(id)}
-                }
-                console.log(msg)
-                Array.from(wsServer.clients)
-                    .filter(client => client.readyState === WebSocket.OPEN)
-                    .forEach(client => client.send(JSON.stringify(msg)))
+                msg.data = {[id]: chat.getMessage(id)};
                 break;
-
+            case 'add':
+                const newMessage = chat.getNewItem({message: eventSocket.data});
+                chat.add(newMessage);
+                msg.data = newMessage;
+                break;
             default:
                 break;
         }
-        const eventData = JSON.stringify({ chat: [eventSocket] });
 
         Array.from(wsServer.clients)
             .filter(client => client.readyState === WebSocket.OPEN)
-            .forEach(client => client.send(eventData))
+            .forEach(client => client.send(JSON.stringify(msg)))
     })
 
     const eventData = JSON.stringify({
