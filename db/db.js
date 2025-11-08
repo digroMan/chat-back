@@ -36,9 +36,13 @@ const subscriptions = {
         this.data = this.data.filter(sub => sub.name !== item.name);
         this.send({ ...item, deleteClient: true });
     },
-
+    
     send(item) {
         this.listeners.forEach(handler => handler(item))
+    },
+
+    getSubscriptions() {
+        return this.data.map(sub => sub.name); 
     },
 
     template() {

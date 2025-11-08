@@ -26,8 +26,8 @@ router.post('/subscriptions', async(ctx) => {
 router.get('/subscriptions/full', (ctx) => {
 
     ctx.response.set('Access-Control-Allow-Origin', origin);
-    
-    ctx.response.body = subscriptions.data;
+    const subscriptionsList = subscriptions.getSubscriptions();
+    ctx.response.body = subscriptionsList;
 })
 
 

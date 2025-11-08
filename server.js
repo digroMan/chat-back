@@ -14,8 +14,6 @@ app.use(koaBody({
 }))
 
 app.use(async (ctx, next) => {
-    subscriptions.template()
-
     const origin = ctx.request.get('Origin');
     if (!origin) {
         return await next();
